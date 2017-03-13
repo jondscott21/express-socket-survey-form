@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>/Index</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type ="text/javascript">
+      $(document).ready(function (){
+          // this triggers the connection event in our server!
+          const socket = io.connect();
+
+          $('form').on('submit', function (event){
+              let form_data = $(this).serializeArray()
+              socket.emit("form_submit", {form_data: form_data});
+              event.preventDefault();
+          });
+
+          socket.on('return_form', function (data){
+              $('tbody').html($('<tr>')).append($('<td>').text(data.response[0].value))
+                  .append($('<td>').text(data.response[1].value))
+                  .append($('<td>').text(data.response[2].value))
+                  .append($('<td>').text(data.response[3].value));
+          });
+          socket.on('random_number', function (data) {
+              console.log(data.response)
+              $('#number').html('Your lucky number is: ' + data.response);
+          });
+      });
+  </script>
+</head>
+<body class="light-blue lighten-5">
+<div class="container">
+  <div id="message" class="card"></div>
+  <div id="number" class="card"></div>
+  <div class="card">
+    <div class="input-field">
+      <form action="">
+        <input type="text" class="validate" name="name" placeholder="Name">
+        <select class="browser-default" name="dojo">
+          <option value="" disabled selected>Dojo Selection</option>
+          <option value="San Jose">San Jose</option>
+          <option value="Dallas">Dallas</option>
+          <option value="Berkley">Berkley</option>
+          <option value="Seattle">Seattle</option>
+        </select>
+        <select class="browser-default" name="language">
+          <option value="" disabled selected>Favorite Language</option>
+          <option value="Python">Python</option>
+          <option value="Javascript">JavaScript</option>
+          <option value="Ruby">Ruby</option>
+          <option value="Swift">Swift</option>
+        </select>
+        <textarea id="comment" class="materialize-textarea" name="comment" placeholder="Comment"></textarea>
+        <input type="submit" class="btn blue" value="Submit">
+      </form>
+    </div>
+  </div>
+  <div class="card">
+            <table>
+              <thead>
+              <tr>
+                <th data-field="name">Name</th>
+                <th data-field="location">Location</th>
+                <th data-field="favorite">Favorite</th>
+                <th data-field="comment">Comment</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+          </table>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+</body>
+</html>
